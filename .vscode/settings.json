@@ -1,0 +1,16 @@
+{
+  "editor.defaultFormatter": "matklad.rust-analyzer",
+  "editor.formatOnSave": true,
+  "editor.rulers": [
+    100
+  ],
+  "editor.tabSize": 4,
+  "cSpell.words": [
+    "deque",
+    "despawn",
+    "despawning",
+    "minigame",
+    "minigames",
+    "cooldown"
+  ]
+}

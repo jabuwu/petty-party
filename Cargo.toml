@@ -1,0 +1,9 @@
+[package]
+name = "petty-party"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.6.1"
+rand = "0.8.5"
+bevy_kira_audio = { version = "0.8", features = [ "ogg" ] }
