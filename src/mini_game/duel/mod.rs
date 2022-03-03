@@ -4,7 +4,7 @@ use bevy_kira_audio::Audio;
 use rand::prelude::*;
 
 const COOLDOWN: f32 = 0.85;
-const ATTACK_PREP_TIME: f32 = 0.55;
+pub const ATTACK_PREP_TIME: f32 = 0.55;
 const ATTACK_STAB_TIME: f32 = 0.1;
 const PARRY_TIME: f32 = 0.5;
 

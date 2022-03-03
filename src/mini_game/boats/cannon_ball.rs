@@ -63,7 +63,7 @@ pub fn update(
 }
 
 pub fn hit_boats(
-    query: Query<(Entity, &CannonBall, &Transform, &Collision), With<CannonBall>>,
+    query: Query<(Entity, &CannonBall, &Transform, &Collision)>,
     mut boat_query: Query<&mut Boat>,
     collision_query: Res<CollisionQuery>,
     mini_game: Res<MiniGame>,

@@ -61,6 +61,11 @@ pub fn init_assets(
         ("rps", "sprites/rps.png"),
         ("item_rapier", "sprites/item_rapier.png"),
         ("item_mystery", "sprites/item_mystery.png"),
+        ("static", "sprites/static.png"),
+        ("me_1", "sprites/me_1.png"),
+        ("me_2", "sprites/me_2.png"),
+        ("heart", "sprites/heart.png"),
+        ("heart_empty", "sprites/heart_empty.png"),
     ];
     let texture_atlases: Vec<(&str, &str, Vec2, usize, usize)> = vec![
         (
@@ -92,6 +97,7 @@ pub fn init_assets(
         ("shoot", "sfx/shoot.ogg"),
         ("duelhit", "sfx/duelhit.ogg"),
         ("duelblock", "sfx/duelblock.ogg"),
+        ("static", "sfx/static.ogg"),
     ];
 
     for image_def in images.iter() {

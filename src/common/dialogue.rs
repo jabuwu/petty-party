@@ -26,9 +26,18 @@ impl Dialogue {
     }
 }
 
-#[derive(Default)]
 pub struct DialogueEntry {
     pub text: String,
+    pub color: Color,
+}
+
+impl Default for DialogueEntry {
+    fn default() -> Self {
+        Self {
+            text: "".into(),
+            color: Color::rgba(1., 0.7, 0.7, 1.0),
+        }
+    }
 }
 
 pub struct DialoguePlugin;
@@ -118,6 +127,7 @@ pub fn update(
             if text.sections[0].value != dialogue.entries[0].text {
                 text.sections[0].value = dialogue.entries[0].text.clone();
             }
+            text.sections[0].style.color = dialogue.entries[0].color;
         }
         for mut bg in bg_query.iter_mut() {
             bg.is_visible = true;

@@ -42,43 +42,56 @@ pub fn init(
     if game.turn == 1 {
         dialogue.add(DialogueEntry {
             text: "Welcome to my board game!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "You roll the dice and move that many tiles!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "If you land on a blue tile, you get 3 coins!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "If you land on a red tile, you lose 3 coins!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "If you pass a green tile, you can buy items!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "After your turn, we play a mini game!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "The winner of the mini game gets more coins.".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "Huh? Mario? No, I don't know anyone by that name...".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "Let's begin!!".into(),
+            ..Default::default()
         });
     } else if matches!(board.your_item, Item::Rapier) && board.rapier_dialog {
         dialogue.add(DialogueEntry {
             text: "Remember: Whoever runs out of coins first loses!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "I keep landing on blue, so I don't think I will run out...".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "Unless of course you use that rapier to start a duel!".into(),
+            ..Default::default()
         });
         dialogue.add(DialogueEntry {
             text: "But remember, I'm not the only one that can lose coins that way!".into(),
+            ..Default::default()
         });
         board.rapier_dialog = false;
     }

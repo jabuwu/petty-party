@@ -3,6 +3,8 @@ use bevy_kira_audio::AudioPlugin;
 use board::BoardPlugin;
 use common::asset_library::AssetLibraryReady;
 use common::CommonPlugin;
+use end_game::EndGamePlugin;
+use ending::EndingPlugin;
 use info_screen::InfoScreenPlugin;
 use intro::IntroPlugin;
 use loading::LoadingPlugin;
@@ -40,6 +42,8 @@ pub enum GameState {
     Board,
     InfoScreen,
     MiniGame,
+    EndGame,
+    Ending,
 }
 
 #[derive(Component)]
@@ -71,8 +75,10 @@ fn main() {
         .add_plugin(BoardPlugin)
         .add_plugin(InfoScreenPlugin)
         .add_plugin(MiniGamePlugin)
+        .add_plugin(EndGamePlugin)
         .add_plugin(IntroPlugin)
         .add_plugin(SetupPlugin)
+        .add_plugin(EndingPlugin)
         .add_startup_system(init)
         .add_system(camera_scale.label(GameLabel::CameraScale))
         .add_system(start_game)
@@ -178,6 +184,8 @@ pub fn reset_game_hotkey(
 
 pub mod board;
 pub mod common;
+pub mod end_game;
+pub mod ending;
 pub mod info_screen;
 pub mod intro;
 pub mod loading;

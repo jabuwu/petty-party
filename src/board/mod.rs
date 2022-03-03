@@ -26,6 +26,8 @@ pub struct Board {
     pub moves: u32,
     pub my_item: Item,
     pub your_item: Item,
+    pub my_item_use_interpolate: f32,
+    pub your_item_use_interpolate: f32,
     pub rapier_dialog: bool,
 }
 
@@ -43,6 +45,8 @@ impl Default for Board {
             moves: 3,
             my_item: Item::TrumpCard,
             your_item: Item::None,
+            my_item_use_interpolate: 0.,
+            your_item_use_interpolate: 0.,
             rapier_dialog: true,
         }
     }

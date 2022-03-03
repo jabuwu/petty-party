@@ -23,12 +23,11 @@ impl Plugin for UseItemPlugin {
 pub fn init(
     mut game: ResMut<Game>,
     mut use_item: ResMut<UseItem>,
-    mut board: ResMut<Board>,
+    board: Res<Board>,
     mut dialogue: ResMut<Dialogue>,
 ) {
     use_item.time = 0.;
     use_item.item = board.your_item;
-    board.your_item = Item::None;
     if matches!(use_item.item, Item::CrystalBall) {
         dialogue.add(DialogueEntry {
             text: "You used the crystal ball!".into(),
@@ -47,13 +46,22 @@ pub fn init(
     }
 }
 
-pub fn cleanup(mut use_item: ResMut<UseItem>) {
+pub fn cleanup(mut board: ResMut<Board>, mut use_item: ResMut<UseItem>) {
+    board.my_item_use_interpolate = 0.;
+    board.your_item = Item::None;
     use_item.time = 0.;
     use_item.item = Item::None;
 }
 
-pub fn update(mut board_state: ResMut<State<BoardState>>, dialogue: Res<Dialogue>) {
-    if !dialogue.busy() {
+pub fn update(
+    mut board: ResMut<Board>,
+    mut board_state: ResMut<State<BoardState>>,
+    dialogue: Res<Dialogue>,
+    time: Res<Time>,
+) {
+    board.your_item_use_interpolate += time.delta_seconds();
+    board.your_item_use_interpolate = board.your_item_use_interpolate.clamp(0., 1.);
+    if !dialogue.busy() && board.your_item_use_interpolate == 1. {
         board_state.set(BoardState::TurnInput).unwrap();
     }
 }
