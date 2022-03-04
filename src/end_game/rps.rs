@@ -85,7 +85,7 @@ pub fn enter(
                     horizontal: HorizontalAlign::Center,
                 },
             ),
-            transform: Transform::from_xyz(0.0, 65.0, 0.5),
+            transform: Transform::from_xyz(0.0, 55.0, 0.5),
             ..Default::default()
         })
         .insert(EndGameEntity);

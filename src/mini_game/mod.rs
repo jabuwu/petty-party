@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_kira_audio::Audio;
 use boats::BoatsPlugin;
 use duel::DuelPlugin;
+use pong::PongPlugin;
 use rps::RpsPlugin;
 
 pub struct MiniGame {
@@ -27,6 +28,7 @@ pub enum MiniGameState {
     Inactive,
     Rps,
     Boats,
+    Pong,
     Duel,
 }
 
@@ -62,6 +64,7 @@ impl Plugin for MiniGamePlugin {
             .add_plugin(RpsPlugin)
             .add_plugin(BoatsPlugin)
             .add_plugin(DuelPlugin)
+            .add_plugin(PongPlugin)
             .add_system_set(SystemSet::on_enter(GameState::MiniGame).with_system(enter))
             .add_system_set(SystemSet::on_exit(GameState::MiniGame).with_system(exit))
             .add_system_set(SystemSet::on_update(GameState::MiniGame).with_system(update))
@@ -222,6 +225,15 @@ pub fn enter(
             text: "Nothing fishy going on here.".into(),
             ..Default::default()
         });
+    } else if game.turn == 3 && !mini_game.practice {
+        dialogue.add(DialogueEntry {
+            text: "Pong? How original.".into(),
+            ..Default::default()
+        });
+        dialogue.add(DialogueEntry {
+            text: "Let me make a slight change real quick...".into(),
+            ..Default::default()
+        });
     }
 }
 
@@ -375,6 +387,7 @@ pub fn coin_text(
 
 pub mod boats;
 pub mod duel;
+pub mod pong;
 pub mod rps;
 
 pub mod prelude {

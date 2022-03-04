@@ -107,6 +107,7 @@ pub fn init_assets(
         ("static", "sfx/static.ogg"),
         ("itembuy", "sfx/itembuy.ogg"),
         ("itemuse", "sfx/itemuse.ogg"),
+        ("pong", "sfx/pong.ogg"),
     ];
     let fonts: Vec<(&str, &str)> = vec![("game", "fonts/Pixellari.ttf")];
 

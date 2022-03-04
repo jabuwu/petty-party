@@ -177,6 +177,7 @@ pub fn cannon_ball_update(
     time: Res<Time>,
     audio: Res<Audio>,
     asset_library: Res<AssetLibrary>,
+    game: Res<Game>,
 ) {
     let mut rng = rand::thread_rng();
     for (entity, mut cannon_ball, mut transform, mut sprite) in query.iter_mut() {
@@ -195,13 +196,14 @@ pub fn cannon_ball_update(
             cannon_ball.falling_size = cannon_ball.falling_size.min(1.);
             transform.scale.x = cannon_ball.falling_size * 0.4;
             transform.scale.y = cannon_ball.falling_size * 0.4;
-            sprite.color = Color::rgba(1., 1., 1., cannon_ball.falling_size * 0.4);
+            sprite.color = game.my_color;
+            sprite.color.set_a(cannon_ball.falling_size * 0.4);
         } else if cannon_ball.landing_size < 0.5 {
             cannon_ball.landing_size += time.delta_seconds() * cannon_ball.speed;
             cannon_ball.landing_size = cannon_ball.landing_size.min(1.);
             transform.scale.x = 1. - cannon_ball.landing_size;
             transform.scale.y = 1. - cannon_ball.landing_size;
-            sprite.color = Color::rgba(1., 1., 1., 1.);
+            sprite.color = game.my_color;
         } else {
             audio.play(asset_library.audio("waterdrop"));
             commands.entity(entity).despawn();

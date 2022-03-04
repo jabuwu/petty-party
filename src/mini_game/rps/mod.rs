@@ -161,7 +161,7 @@ pub fn rps_init(game: Res<Game>, mut commands: Commands, asset_library: Res<Asse
                     horizontal: HorizontalAlign::Center,
                 },
             ),
-            transform: Transform::from_xyz(0.0, 65.0, 0.5),
+            transform: Transform::from_xyz(0.0, 55.0, 0.5),
             ..Default::default()
         })
         .insert(RpsText)

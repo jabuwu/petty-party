@@ -36,9 +36,10 @@ pub fn enter(
     if game.duel {
         info_screen.mini_game = MiniGameState::Duel;
     } else {
-        info_screen.mini_game = match game.turn % 2 {
-            0 => MiniGameState::Rps,
-            _ => MiniGameState::Boats,
+        info_screen.mini_game = match game.turn % 3 {
+            0 => MiniGameState::Pong,
+            1 => MiniGameState::Boats,
+            _ => MiniGameState::Rps,
         };
     }
     let mut mini_game_name = String::new();
@@ -58,6 +59,12 @@ pub fn enter(
             mini_game_name = "Duel".into();
             mini_game_description =
                 "Attack your opponent! Defend against their attack!\nDefend right before an attack to stun your opponent!\nCancel your attack by releasing the A button!\nBait your opponent into defending prematurely!\nSteal coins if you successfully attack them.\n\nControls:\nA - Hold to attack\nD - Hold to defend".into();
+        }
+        MiniGameState::Pong => {
+            mini_game_name = "Pong".into();
+            mini_game_description =
+                "Hit the puck with your paddle!\nIf the puck gets by your opponent, gain 2 coins!\n3 pucks total"
+                    .into();
         }
         MiniGameState::Inactive => {}
     }
@@ -208,6 +215,7 @@ pub fn update(
             input.reset(KeyCode::Space);
         }
         if input.just_pressed(KeyCode::Return) {
+            game.practice_first_message = false;
             mini_game.practice = true;
             mini_game_state.set(info_screen.mini_game).unwrap();
             game_state.set(GameState::MiniGame).unwrap();

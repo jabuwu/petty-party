@@ -1,6 +1,5 @@
 use crate::prelude::*;
 use bevy::prelude::*;
-use bevy_kira_audio::Audio;
 
 pub enum IntroState {
     Dialogue1,
@@ -21,13 +20,7 @@ impl Plugin for IntroPlugin {
     }
 }
 
-pub fn enter(
-    mut intro: ResMut<IntroState>,
-    audio: Res<Audio>,
-    asset_library: Res<AssetLibrary>,
-    difficulty: Res<Difficulty>,
-    mut game: ResMut<Game>,
-) {
+pub fn enter(mut intro: ResMut<IntroState>, difficulty: Res<Difficulty>, mut game: ResMut<Game>) {
     //audio.play_looped(asset_library.audio("music"));
     *intro = IntroState::Dialogue1;
     match difficulty.as_ref() {

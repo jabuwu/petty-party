@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use boats::EgBoatsPlugin;
 use duel::EgDuelPlugin;
 use noise::NoisePlugin;
+use pong::EgPongPlugin;
 use rps::EgRpsPlugin;
 
 #[derive(Component)]
@@ -15,6 +16,7 @@ pub enum EndGameState {
     Rps,
     Duel,
     Boats,
+    Pong,
 }
 
 pub struct EndGame {
@@ -39,6 +41,7 @@ impl Plugin for EndGamePlugin {
             .add_plugin(EgRpsPlugin)
             .add_plugin(EgDuelPlugin)
             .add_plugin(EgBoatsPlugin)
+            .add_plugin(EgPongPlugin)
             .add_state(EndGameState::Inactive)
             .insert_resource(EndGame {
                 turn: 0,
@@ -147,7 +150,7 @@ pub fn update(
                     0 => end_game_state.set(EndGameState::Rps).unwrap(),
                     1 => end_game_state.set(EndGameState::Boats).unwrap(),
                     2 => end_game_state.set(EndGameState::Rps).unwrap(),
-                    3 => end_game_state.set(EndGameState::Boats).unwrap(),
+                    3 => end_game_state.set(EndGameState::Pong).unwrap(),
                     _ => end_game_state.set(EndGameState::Duel).unwrap(),
                 }
             }
@@ -178,6 +181,7 @@ pub fn update(
 pub mod boats;
 pub mod duel;
 pub mod noise;
+pub mod pong;
 pub mod rps;
 
 pub mod prelude {
