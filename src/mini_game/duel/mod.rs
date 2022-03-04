@@ -56,12 +56,13 @@ impl Plugin for DuelPlugin {
 
 pub fn init(
     game: Res<Game>,
-    mini_game: Res<MiniGame>,
+    mut mini_game: ResMut<MiniGame>,
     mut duel: ResMut<Duel>,
     mut commands: Commands,
     asset_library: Res<AssetLibrary>,
     difficulty: Res<Difficulty>,
 ) {
+    mini_game.display_prefix = "".into();
     duel.time = match difficulty.as_ref() {
         Difficulty::Normal => 45.,
         Difficulty::Hard => 30.,

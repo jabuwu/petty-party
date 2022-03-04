@@ -22,11 +22,12 @@ impl Plugin for BoatsPlugin {
 }
 
 pub fn enter(
-    mini_game: Res<MiniGame>,
+    mut mini_game: ResMut<MiniGame>,
     mut commands: Commands,
     asset_library: Res<AssetLibrary>,
     difficulty: Res<Difficulty>,
 ) {
+    mini_game.display_prefix = "+".into();
     let my_size = if mini_game.practice {
         1.
     } else {

@@ -73,6 +73,8 @@ pub fn init_assets(
         ("heart_empty", "sprites/heart_empty.png"),
         ("info_bg", "sprites/info_bg.png"),
         ("pawn", "sprites/pawn.png"),
+        ("menu_bg", "sprites/pp_back.png"),
+        ("menu_logo", "sprites/pp_logo2x.png"),
     ];
     let texture_atlases: Vec<(&str, &str, Vec2, usize, usize)> = vec![
         (

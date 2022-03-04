@@ -30,8 +30,9 @@ pub fn init(
     game: Res<Game>,
     mut pong: ResMut<Pong>,
     mut commands: Commands,
-    mini_game: Res<MiniGame>,
+    mut mini_game: ResMut<MiniGame>,
 ) {
+    mini_game.display_prefix = "+".into();
     *pong = Pong::default();
     commands
         .spawn_bundle(SpriteBundle {

@@ -92,7 +92,7 @@ pub fn init(
             ..Default::default()
         });
         dialogue.add(DialogueEntry {
-            text: "I keep landing on blue, so I don't think I will run out...".into(),
+            text: "My coins are only going up...".into(),
             ..Default::default()
         });
         dialogue.add(DialogueEntry {

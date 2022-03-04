@@ -107,7 +107,13 @@ impl Plugin for RpsPlugin {
     }
 }
 
-pub fn rps_init(game: Res<Game>, mut commands: Commands, asset_library: Res<AssetLibrary>) {
+pub fn rps_init(
+    game: Res<Game>,
+    mut commands: Commands,
+    asset_library: Res<AssetLibrary>,
+    mut mini_game: ResMut<MiniGame>,
+) {
+    mini_game.display_prefix = "+".into();
     commands
         .spawn()
         .insert(RpsController {
@@ -396,6 +402,8 @@ pub fn rps_input(
     mut query: Query<&mut RpsController>,
     mut dialogue: ResMut<Dialogue>,
     difficulty: Res<Difficulty>,
+    audio: Res<Audio>,
+    asset_library: Res<AssetLibrary>,
 ) {
     // this function has been visited by the game jam fairy
     if dialogue.busy() {
@@ -453,12 +461,15 @@ pub fn rps_input(
                 }
             } else if *selection_window > 0. {
                 if input.just_pressed(KeyCode::R) {
+                    audio.play(asset_library.audio("shoot"));
                     *your_selection = RpsSelect::Rock;
                     *selection_window = 0.;
                 } else if input.just_pressed(KeyCode::P) {
+                    audio.play(asset_library.audio("shoot"));
                     *your_selection = RpsSelect::Paper;
                     *selection_window = 0.;
                 } else if input.just_pressed(KeyCode::S) {
+                    audio.play(asset_library.audio("shoot"));
                     *your_selection = RpsSelect::Scissors;
                     *selection_window = 0.;
                 }

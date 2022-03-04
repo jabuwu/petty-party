@@ -9,6 +9,7 @@ use ending::EndingPlugin;
 use info_screen::InfoScreenPlugin;
 use intro::IntroPlugin;
 use loading::LoadingPlugin;
+use menu::MenuPlugin;
 use mini_game::MiniGamePlugin;
 use setup::SetupPlugin;
 
@@ -38,6 +39,7 @@ pub struct GameResetSend;
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
 pub enum GameState {
     Loading,
+    Menu,
     Setup,
     Intro,
     Board,
@@ -82,6 +84,7 @@ fn main() {
         .add_plugin(SetupPlugin)
         .add_plugin(EndingPlugin)
         .add_plugin(ContinuePlugin)
+        .add_plugin(MenuPlugin)
         .add_startup_system(init)
         .add_system(camera_scale.label(GameLabel::CameraScale))
         .add_system(start_game)
@@ -116,7 +119,7 @@ pub fn start_game(
         game.dice_roll = false;
         game.practice_first_message = true;
         game.rps_early_message = true;
-        game_state.set(GameState::Setup).unwrap();
+        game_state.set(GameState::Menu).unwrap();
     }
 }
 
@@ -176,6 +179,7 @@ pub mod ending;
 pub mod info_screen;
 pub mod intro;
 pub mod loading;
+pub mod menu;
 pub mod mini_game;
 pub mod setup;
 

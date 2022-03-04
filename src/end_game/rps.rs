@@ -103,6 +103,8 @@ pub fn update(
     mut query: Query<&mut TextureAtlasSprite, With<EgRpsHand>>,
     mut move_query: Query<&mut Transform, With<EgRpsMove>>,
     input: ResMut<Input<KeyCode>>,
+    audio: Res<Audio>,
+    asset_library: Res<AssetLibrary>,
 ) {
     for mut sprite in query.iter_mut() {
         if let Some(select) = eg_rps.your_select {
@@ -114,10 +116,13 @@ pub fn update(
     }
     if eg_rps.your_select.is_none() {
         if input.just_pressed(KeyCode::R) {
+            audio.play(asset_library.audio("shoot"));
             eg_rps.your_select = Some(RpsSelect::Rock);
         } else if input.just_pressed(KeyCode::P) {
+            audio.play(asset_library.audio("shoot"));
             eg_rps.your_select = Some(RpsSelect::Paper);
         } else if input.just_pressed(KeyCode::S) {
+            audio.play(asset_library.audio("shoot"));
             eg_rps.your_select = Some(RpsSelect::Scissors);
         }
     }

@@ -6,5 +6,3 @@ pub enum Item {
     TrumpCard,
     TestItem,
 }
-
-pub const RAPIER_COST: u32 = 10;

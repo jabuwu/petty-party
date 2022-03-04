@@ -11,6 +11,7 @@ pub struct MiniGame {
     pub start: bool,
     pub finish: bool,
     pub practice: bool,
+    pub display_prefix: String,
     pub display_my_coins: u32,
     pub display_your_coins: u32,
 }
@@ -57,6 +58,7 @@ impl Plugin for MiniGamePlugin {
                 start: false,
                 finish: false,
                 practice: false,
+                display_prefix: "".into(),
                 display_my_coins: 0,
                 display_your_coins: 0,
             })
@@ -324,7 +326,7 @@ pub fn update(
                     audio.play(asset_library.audio("start"));
                 }
                 ready.start_time += timer.delta_seconds();
-                text.sections[0].value = "Start!".into();
+                text.sections[0].value = "Go!".into();
             } else {
                 text.sections[0].value = "".into();
                 mini_game.start = false;
@@ -373,10 +375,16 @@ pub fn coin_text(
     for (mut text, display) in query.iter_mut() {
         if mini_game.active || mini_game.finish {
             if display.mine {
-                text.sections[0].value = format!("Coins: {}", mini_game.display_my_coins);
+                text.sections[0].value = format!(
+                    "Coins: {}{}",
+                    mini_game.display_prefix, mini_game.display_my_coins
+                );
                 text.sections[0].style.color = game.my_color;
             } else {
-                text.sections[0].value = format!("Coins: {}", mini_game.display_your_coins);
+                text.sections[0].value = format!(
+                    "Coins: {}{}",
+                    mini_game.display_prefix, mini_game.display_your_coins
+                );
                 text.sections[0].style.color = game.your_color;
             }
         } else {

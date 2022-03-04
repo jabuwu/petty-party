@@ -113,7 +113,7 @@ pub fn update(
     for (mut sprite, mut visibility) in dice_query.iter_mut() {
         if dice.visible {
             visibility.is_visible = true;
-            if dice.time >= 1. {
+            if dice.time >= 0.75 {
                 if audio_state.rolling {
                     audio.play(asset_library.audio("diceding"));
                     audio.stop_channel(&audio_state.roll);

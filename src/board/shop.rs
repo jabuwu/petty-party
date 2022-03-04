@@ -1,4 +1,3 @@
-use super::item::RAPIER_COST;
 use crate::prelude::*;
 use bevy::prelude::*;
 use bevy_kira_audio::Audio;
@@ -24,7 +23,12 @@ pub fn open(
     mut commands: Commands,
     mut dialogue: ResMut<Dialogue>,
     asset_library: Res<AssetLibrary>,
+    difficulty: Res<Difficulty>,
 ) {
+    let rapier_cost = match *difficulty {
+        Difficulty::Normal => 5,
+        Difficulty::Hard => 10,
+    };
     for _ in shop_open.iter() {
         if board.first_shop {
             dialogue.add(DialogueEntry {
@@ -80,7 +84,7 @@ pub fn open(
                         ..Default::default()
                     },
                     text: Text::with_section(
-                        "SPACE - Leave Shop\nR - Buy Rapier (10 coins)",
+                        format!("SPACE - Leave Shop\nR - Buy Rapier ({} coins)", rapier_cost),
                         TextStyle {
                             font: asset_library.font("game"),
                             font_size: 24.0,
@@ -107,7 +111,16 @@ pub fn update(
     shop_query: Query<Entity, With<Shop>>,
     audio: Res<Audio>,
     asset_library: Res<AssetLibrary>,
+    difficulty: Res<Difficulty>,
 ) {
+    let rapier_cost = match *difficulty {
+        Difficulty::Normal => 5,
+        Difficulty::Hard => 10,
+    };
+    let buy_buffer = match *difficulty {
+        Difficulty::Normal => 1,
+        Difficulty::Hard => 3,
+    };
     let mut shop_open = false;
     for _ in shop_query.iter() {
         shop_open = true;
@@ -128,7 +141,7 @@ pub fn update(
             commands.entity(entity).despawn_recursive();
         }
     } else if input.just_pressed(KeyCode::R) {
-        if game.your_coins > RAPIER_COST + 3 {
+        if game.your_coins > rapier_cost + buy_buffer {
             audio.play(asset_library.audio("itembuy"));
             board.your_item = Item::Rapier;
             board.your_item_use_interpolate = 0.;
@@ -136,12 +149,12 @@ pub fn update(
             for entity in shop_query.iter() {
                 commands.entity(entity).despawn_recursive();
             }
-            game.your_coins -= RAPIER_COST;
+            game.your_coins -= rapier_cost;
             dialogue.add(DialogueEntry {
                 text: "You bought a rapier!".into(),
                 ..Default::default()
             });
-        } else if game.your_coins >= RAPIER_COST {
+        } else if game.your_coins >= rapier_cost {
             dialogue.add(DialogueEntry {
                 text: "Sorry, but you're about to land on a red tile!".into(),
                 ..Default::default()

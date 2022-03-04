@@ -24,6 +24,7 @@ pub fn init(
     mut board: ResMut<Board>,
     mut moving: ResMut<Moving>,
     mut dice_start: EventWriter<DiceRollStart>,
+    difficulty: Res<Difficulty>,
 ) {
     moving.sent_dialogue = false;
     board.moving = true;
@@ -35,7 +36,14 @@ pub fn init(
             board.moves = if game.turn % 2 == 1 { 4 } else { 5 };
         }
     } else {
-        board.moves = rng.gen_range(1..=2) * 3;
+        match *difficulty {
+            Difficulty::Normal => {
+                board.moves = 6;
+            }
+            Difficulty::Hard => {
+                board.moves = rng.gen_range(1..=2) * 3;
+            }
+        }
     }
     dice_start.send(DiceRollStart { value: board.moves });
 }
