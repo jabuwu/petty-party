@@ -11,6 +11,7 @@ use intro::IntroPlugin;
 use loading::LoadingPlugin;
 use menu::MenuPlugin;
 use mini_game::MiniGamePlugin;
+use music::MusicPlugin;
 use setup::SetupPlugin;
 
 pub enum Difficulty {
@@ -85,6 +86,7 @@ fn main() {
         .add_plugin(EndingPlugin)
         .add_plugin(ContinuePlugin)
         .add_plugin(MenuPlugin)
+        .add_plugin(MusicPlugin)
         .add_startup_system(init)
         .add_system(camera_scale.label(GameLabel::CameraScale))
         .add_system(start_game)
@@ -181,6 +183,7 @@ pub mod intro;
 pub mod loading;
 pub mod menu;
 pub mod mini_game;
+pub mod music;
 pub mod setup;
 
 pub mod prelude {
