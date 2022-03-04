@@ -27,6 +27,7 @@ pub fn init(
     mut dialogue: ResMut<Dialogue>,
     game: Res<Game>,
     mut board: ResMut<Board>,
+    difficulty: Res<Difficulty>,
 ) {
     let follow_entity = commands
         .spawn()
@@ -46,14 +47,25 @@ pub fn init(
             text: "You roll the dice and move that many tiles!".into(),
             ..Default::default()
         });
-        dialogue.add(DialogueEntry {
-            text: "If you land on a blue tile, you get 3 coins!".into(),
-            ..Default::default()
-        });
-        dialogue.add(DialogueEntry {
-            text: "If you land on a red tile, you lose 3 coins!".into(),
-            ..Default::default()
-        });
+        if matches!(*difficulty, Difficulty::Normal) {
+            dialogue.add(DialogueEntry {
+                text: "If you land on a blue tile, you get a coin!".into(),
+                ..Default::default()
+            });
+            dialogue.add(DialogueEntry {
+                text: "If you land on a red tile, you lose a coin!".into(),
+                ..Default::default()
+            });
+        } else {
+            dialogue.add(DialogueEntry {
+                text: "If you land on a blue tile, you get 3 coins!".into(),
+                ..Default::default()
+            });
+            dialogue.add(DialogueEntry {
+                text: "If you land on a red tile, you lose 3 coins!".into(),
+                ..Default::default()
+            });
+        }
         dialogue.add(DialogueEntry {
             text: "If you pass a green tile, you can buy items!".into(),
             ..Default::default()

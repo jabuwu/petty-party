@@ -108,7 +108,7 @@ pub fn update(
     if mini_game.active {
         pong.spawn_time += time.delta_seconds();
     }
-    if pong.spawn_time > 10. && pong.spawn_count < 2 {
+    if pong.spawn_time > 5. && pong.spawn_count < 2 {
         pong.spawn_puck = true;
         pong.spawn_time = 0.;
         pong.spawn_count += 1;

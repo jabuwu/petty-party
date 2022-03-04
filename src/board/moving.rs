@@ -47,13 +47,21 @@ pub fn update(
     mut dialogue: ResMut<Dialogue>,
     pawn_query: Query<&Pawn>,
     mut moving: ResMut<Moving>,
+    difficulty: Res<Difficulty>,
 ) {
     if !board.moving && !moving.sent_dialogue && !board.my_turn {
         if game.turn == 1 {
-            dialogue.add(DialogueEntry {
-                text: "Oh, bad luck landing on red. You lose 3 coins!".into(),
-                ..Default::default()
-            });
+            if matches!(*difficulty, Difficulty::Normal) {
+                dialogue.add(DialogueEntry {
+                    text: "Oh, bad luck landing on red. You lost a coin!".into(),
+                    ..Default::default()
+                });
+            } else {
+                dialogue.add(DialogueEntry {
+                    text: "Oh, bad luck landing on red. You lose 3 coins!".into(),
+                    ..Default::default()
+                });
+            }
             dialogue.add(DialogueEntry {
                 text: "If you run out of coins, you lose the game!".into(),
                 ..Default::default()
@@ -81,13 +89,25 @@ pub fn update(
                 if let Ok(pawn) = pawn_query.get(my_pawn) {
                     match pawn.tile_type {
                         TileType::Blue => {
-                            game.my_coins += 3;
+                            if matches!(*difficulty, Difficulty::Normal) {
+                                game.my_coins += 1;
+                            } else {
+                                game.my_coins += 3;
+                            }
                         }
                         TileType::Red => {
-                            if game.my_coins <= 3 {
-                                game.my_coins = 0;
+                            if matches!(*difficulty, Difficulty::Normal) {
+                                if game.my_coins <= 1 {
+                                    game.my_coins = 0;
+                                } else {
+                                    game.my_coins -= 1;
+                                }
                             } else {
-                                game.my_coins -= 3;
+                                if game.my_coins <= 3 {
+                                    game.my_coins = 0;
+                                } else {
+                                    game.my_coins -= 3;
+                                }
                             }
                         }
                         TileType::Green => {}
@@ -101,13 +121,25 @@ pub fn update(
                 if let Ok(pawn) = pawn_query.get(your_pawn) {
                     match pawn.tile_type {
                         TileType::Blue => {
-                            game.your_coins += 3;
+                            if matches!(*difficulty, Difficulty::Normal) {
+                                game.your_coins += 1;
+                            } else {
+                                game.your_coins += 3;
+                            }
                         }
                         TileType::Red => {
-                            if game.your_coins <= 3 {
-                                game.your_coins = 0;
+                            if matches!(*difficulty, Difficulty::Normal) {
+                                if game.your_coins <= 1 {
+                                    game.your_coins = 0;
+                                } else {
+                                    game.your_coins -= 1;
+                                }
                             } else {
-                                game.your_coins -= 3;
+                                if game.your_coins <= 3 {
+                                    game.your_coins = 0;
+                                } else {
+                                    game.your_coins -= 3;
+                                }
                             }
                         }
                         TileType::Green => {}

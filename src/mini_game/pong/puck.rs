@@ -68,7 +68,7 @@ pub fn update(
             collision_query.check(transform.translation.truncate(), collision.shape, filter)
         {
             audio.play(asset_library.audio("pong"));
-            let magnitude = puck.velocity.length() + 10.;
+            let magnitude = puck.velocity.length() + 20.;
             let mut difference =
                 (transform.translation.truncate() - result.position).normalize_or_zero();
             while collision_query

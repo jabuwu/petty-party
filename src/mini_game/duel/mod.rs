@@ -12,7 +12,8 @@ pub struct Duel {
     time: f32,
     my_coins: u32,
     your_coins: u32,
-    coin_penalty: u32,
+    my_coin_penalty: u32,
+    your_coin_penalty: u32,
     player_cooldown_percent: f32,
 }
 
@@ -43,7 +44,8 @@ impl Plugin for DuelPlugin {
             time: 0.,
             my_coins: 0,
             your_coins: 0,
-            coin_penalty: 1,
+            my_coin_penalty: 1,
+            your_coin_penalty: 1,
             player_cooldown_percent: 1.,
         })
         .add_system_set(SystemSet::on_enter(MiniGameState::Duel).with_system(init))
@@ -64,7 +66,11 @@ pub fn init(
         Difficulty::Normal => 45.,
         Difficulty::Hard => 30.,
     };
-    duel.coin_penalty = match difficulty.as_ref() {
+    duel.my_coin_penalty = match difficulty.as_ref() {
+        Difficulty::Normal => 5,
+        Difficulty::Hard => 2,
+    };
+    duel.your_coin_penalty = match difficulty.as_ref() {
         Difficulty::Normal => 3,
         Difficulty::Hard => 2,
     };
@@ -358,20 +364,20 @@ pub fn update(
         }
     }
     if player_hit && duel.your_coins > 0 {
-        if duel.coin_penalty > duel.your_coins {
+        if duel.your_coin_penalty > duel.your_coins {
             duel.your_coins = 0;
             duel.my_coins += 1;
         } else {
-            duel.your_coins -= duel.coin_penalty;
+            duel.your_coins -= duel.your_coin_penalty;
             duel.my_coins += 1;
         }
     }
     if myself_hit && duel.my_coins > 0 {
-        if duel.coin_penalty > duel.my_coins {
+        if duel.my_coin_penalty > duel.my_coins {
             duel.my_coins = 0;
             duel.your_coins += 1;
         } else {
-            duel.my_coins -= duel.coin_penalty;
+            duel.my_coins -= duel.my_coin_penalty;
             duel.your_coins += 1;
         }
     }
