@@ -13,6 +13,7 @@ pub struct Duel {
     my_coins: u32,
     your_coins: u32,
     coin_penalty: u32,
+    player_cooldown_percent: f32,
 }
 
 #[derive(Default, Component)]
@@ -43,6 +44,7 @@ impl Plugin for DuelPlugin {
             my_coins: 0,
             your_coins: 0,
             coin_penalty: 1,
+            player_cooldown_percent: 1.,
         })
         .add_system_set(SystemSet::on_enter(MiniGameState::Duel).with_system(init))
         .add_system_set(SystemSet::on_update(MiniGameState::Duel).with_system(update))
@@ -56,20 +58,19 @@ pub fn init(
     mut duel: ResMut<Duel>,
     mut commands: Commands,
     asset_library: Res<AssetLibrary>,
-    asset_server: Res<AssetServer>,
     difficulty: Res<Difficulty>,
 ) {
     duel.time = match difficulty.as_ref() {
-        Difficulty::Easy => 30.,
-        Difficulty::Normal => 30.,
-        Difficulty::Hard => 20.,
-        Difficulty::VeryHard => 20.,
+        Difficulty::Normal => 45.,
+        Difficulty::Hard => 30.,
     };
     duel.coin_penalty = match difficulty.as_ref() {
-        Difficulty::Easy => 3,
         Difficulty::Normal => 3,
         Difficulty::Hard => 2,
-        Difficulty::VeryHard => 1,
+    };
+    duel.player_cooldown_percent = match difficulty.as_ref() {
+        Difficulty::Normal => 0.5,
+        Difficulty::Hard => 1.,
     };
     if mini_game.practice {
         duel.my_coins = 100;
@@ -138,7 +139,7 @@ pub fn init(
                     text: Text::with_section(
                         "",
                         TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font: asset_library.font("game"),
                             font_size: 24.0,
                             color: Color::WHITE,
                         },
@@ -165,6 +166,7 @@ pub fn update(
     mut hud_query: Query<&mut Text, With<DuelHud>>,
     audio: Res<Audio>,
     asset_library: Res<AssetLibrary>,
+    difficulty: Res<Difficulty>,
 ) {
     if !mini_game.active {
         for mut text in hud_query.iter_mut() {
@@ -183,6 +185,14 @@ pub fn update(
     let mut myself_stun = false;
     let mut myself_defended = false;
     for (mut duelist, mut transform, mut sprite) in duelist_query.iter_mut() {
+        let attack_prep_time = if duelist.player {
+            match *difficulty {
+                Difficulty::Normal => ATTACK_PREP_TIME * 0.5,
+                Difficulty::Hard => ATTACK_PREP_TIME,
+            }
+        } else {
+            ATTACK_PREP_TIME
+        };
         if duelist.player {
             if input.just_pressed(KeyCode::A) {
                 duelist.wants_to_attack = true;
@@ -201,7 +211,11 @@ pub fn update(
             duelist.wants_to_attack = true;
         }
         if duelist.defend_time > 0. && !duelist.wants_to_defend {
-            duelist.cooldown = COOLDOWN;
+            if duelist.player {
+                duelist.cooldown = COOLDOWN * duel.player_cooldown_percent;
+            } else {
+                duelist.cooldown = COOLDOWN;
+            }
         }
         if duelist.cooldown <= 0. {
             duelist.attacking = duelist.wants_to_attack;
@@ -243,11 +257,11 @@ pub fn update(
                 sprite.index = 3;
             }
         } else if duelist.attack_time > 0. {
-            if duelist.attack_time < ATTACK_PREP_TIME {
+            if duelist.attack_time < attack_prep_time {
                 transform.translation.x = duelist.x;
                 sprite.index = 1;
-            } else if duelist.attack_time < ATTACK_PREP_TIME + ATTACK_STAB_TIME {
-                if duelist.attack_time > ATTACK_PREP_TIME + ATTACK_STAB_TIME * 0.5
+            } else if duelist.attack_time < attack_prep_time + ATTACK_STAB_TIME {
+                if duelist.attack_time > attack_prep_time + ATTACK_STAB_TIME * 0.5
                     && !duelist.attacked
                 {
                     duelist.attacked = true;
@@ -260,7 +274,11 @@ pub fn update(
                 transform.translation.x = duelist.x + 10.;
                 sprite.index = 2;
             } else {
-                duelist.cooldown = COOLDOWN;
+                if duelist.player {
+                    duelist.cooldown = COOLDOWN * duel.player_cooldown_percent;
+                } else {
+                    duelist.cooldown = COOLDOWN;
+                }
             }
         } else if duelist.defend_time > 0. {
             if duelist.player {
@@ -320,10 +338,18 @@ pub fn update(
             duelist.defend_time = 0.;
             if hit {
                 duelist.hit = true;
-                duelist.cooldown = COOLDOWN * 0.75;
+                if duelist.player {
+                    duelist.cooldown = COOLDOWN * 0.75 * duel.player_cooldown_percent;
+                } else {
+                    duelist.cooldown = COOLDOWN * 0.75;
+                }
             }
             if stun {
-                duelist.cooldown = COOLDOWN * 2.;
+                if duelist.player {
+                    duelist.cooldown = COOLDOWN * 2. * duel.player_cooldown_percent;
+                } else {
+                    duelist.cooldown = COOLDOWN * 2.;
+                }
             }
         }
         if defended {
@@ -372,16 +398,12 @@ pub fn ai(
         return;
     }
     let attack_chance: f32 = match difficulty.as_ref() {
-        Difficulty::Easy => 0.03,
         Difficulty::Normal => 0.03,
         Difficulty::Hard => 0.03,
-        Difficulty::VeryHard => 0.03,
     };
     let attack_stop_chance: f32 = match difficulty.as_ref() {
-        Difficulty::Easy => 0.001,
         Difficulty::Normal => 0.005,
         Difficulty::Hard => 0.03,
-        Difficulty::VeryHard => 0.04,
     };
     let mut duelist_count = 0;
     let mut player_attack_time = 0.;

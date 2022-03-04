@@ -19,7 +19,7 @@ pub fn init(
     mut board: ResMut<Board>,
     mut camera_controller: ResMut<CameraController>,
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    asset_library: Res<AssetLibrary>,
 ) {
     board.score_overlay = false;
     camera_controller.follow_entity = None;
@@ -48,7 +48,7 @@ pub fn init(
                 text: Text::with_section(
                     "WASD - Look Around\nF - Exit Free Cam",
                     TextStyle {
-                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                        font: asset_library.font("game"),
                         font_size: 24.0,
                         color: Color::BLACK,
                     },

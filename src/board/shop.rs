@@ -1,6 +1,7 @@
 use super::item::RAPIER_COST;
 use crate::prelude::*;
 use bevy::prelude::*;
+use bevy_kira_audio::Audio;
 
 pub struct ShopOpen;
 
@@ -22,7 +23,7 @@ pub fn open(
     mut shop_open: EventReader<ShopOpen>,
     mut commands: Commands,
     mut dialogue: ResMut<Dialogue>,
-    asset_server: Res<AssetServer>,
+    asset_library: Res<AssetLibrary>,
 ) {
     for _ in shop_open.iter() {
         if board.first_shop {
@@ -81,7 +82,7 @@ pub fn open(
                     text: Text::with_section(
                         "SPACE - Leave Shop\nR - Buy Rapier (10 coins)",
                         TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font: asset_library.font("game"),
                             font_size: 24.0,
                             color: Color::BLACK,
                         },
@@ -104,6 +105,8 @@ pub fn update(
     mut commands: Commands,
     input: Res<Input<KeyCode>>,
     shop_query: Query<Entity, With<Shop>>,
+    audio: Res<Audio>,
+    asset_library: Res<AssetLibrary>,
 ) {
     let mut shop_open = false;
     for _ in shop_query.iter() {
@@ -126,7 +129,9 @@ pub fn update(
         }
     } else if input.just_pressed(KeyCode::R) {
         if game.your_coins > RAPIER_COST + 3 {
+            audio.play(asset_library.audio("itembuy"));
             board.your_item = Item::Rapier;
+            board.your_item_use_interpolate = 0.;
             board.shop = false;
             for entity in shop_query.iter() {
                 commands.entity(entity).despawn_recursive();
@@ -138,7 +143,11 @@ pub fn update(
             });
         } else if game.your_coins >= RAPIER_COST {
             dialogue.add(DialogueEntry {
-                text: "Sorry! If you buy this item you will run out of coins!".into(),
+                text: "Sorry, but you're about to land on a red tile!".into(),
+                ..Default::default()
+            });
+            dialogue.add(DialogueEntry {
+                text: "If you buy this now, you will lose the game!".into(),
                 ..Default::default()
             });
         } else {

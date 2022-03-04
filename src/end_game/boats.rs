@@ -86,7 +86,12 @@ pub fn boat_update(
     collision_query: Res<CollisionQuery>,
     timer: Res<Time>,
     input: Res<Input<KeyCode>>,
+    difficulty: Res<Difficulty>,
 ) {
+    let speed = match *difficulty {
+        Difficulty::Normal => 2.0,
+        Difficulty::Hard => 1.5,
+    };
     for (_, _, _, _, mut sprite) in boat_query.iter_mut() {
         sprite.color = game.your_color;
     }
@@ -104,8 +109,7 @@ pub fn boat_update(
         if input.pressed(KeyCode::D) {
             boat.movement.x += 1.;
         }
-        boat.movement = boat.movement.normalize_or_zero() * 1.5;
-        let movement = boat.movement.normalize_or_zero() * 1.5;
+        boat.movement = boat.movement.normalize_or_zero() * speed;
         let collision_filter = Some(CollisionFilter {
             exclude_entity: entity,
             flags: 0x1000,
@@ -128,24 +132,24 @@ pub fn boat_update(
         if collision_query
             .check_moving(
                 transform.translation.truncate(),
-                Vec2::new(movement.x, 0.),
+                Vec2::new(boat.movement.x, 0.),
                 collision.shape,
                 collision_filter,
             )
             .is_none()
         {
-            transform.translation.x += movement.x;
+            transform.translation.x += boat.movement.x;
         }
         if collision_query
             .check_moving(
                 transform.translation.truncate(),
-                Vec2::new(0., movement.y),
+                Vec2::new(0., boat.movement.y),
                 collision.shape,
                 collision_filter,
             )
             .is_none()
         {
-            transform.translation.y += movement.y;
+            transform.translation.y += boat.movement.y;
         }
         transform.translation.x = transform.translation.x.min(120.).max(-110.);
         transform.translation.y = transform.translation.y.min(60.).max(-60.);

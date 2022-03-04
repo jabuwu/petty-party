@@ -36,7 +36,6 @@ pub fn enter(
     game: Res<Game>,
     mut commands: Commands,
     asset_library: Res<AssetLibrary>,
-    asset_server: Res<AssetServer>,
     audio: Res<Audio>,
 ) {
     audio.play(asset_library.audio("shoot"));
@@ -77,7 +76,7 @@ pub fn enter(
             text: Text::with_section(
                 "Shoot!",
                 TextStyle {
-                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                    font: asset_library.font("game"),
                     font_size: 40.0,
                     color: Color::WHITE,
                 },
@@ -140,7 +139,10 @@ pub fn update(
                         end_game.your_health -= 1;
                     }
                 }
-                _ => {}
+                RpsCompare::Draw => {
+                    end_game.turn -= 1;
+                }
+                RpsCompare::Win => {}
             }
             eg_rps.lost_health = true;
         }

@@ -53,7 +53,7 @@ impl Plugin for DialoguePlugin {
 
 pub fn init(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    asset_library: Res<AssetLibrary>,
     mut asset_library_ready: EventReader<AssetLibraryReady>,
 ) {
     for _ in asset_library_ready.iter() {
@@ -61,7 +61,6 @@ pub fn init(
             .spawn_bundle(NodeBundle {
                 style: Style {
                     size: Size::new(Val::Percent(100.0), Val::Percent(40.0)),
-                    justify_content: JustifyContent::Center,
                     position_type: PositionType::Absolute,
                     position: Rect {
                         bottom: Val::Px(0.0),
@@ -88,13 +87,13 @@ pub fn init(
                         text: Text::with_section(
                             "",
                             TextStyle {
-                                font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                                font_size: 24.0,
+                                font: asset_library.font("game"),
+                                font_size: 21.0,
                                 color: Color::rgba(1., 0.7, 0.7, 1.0),
                             },
                             TextAlignment {
-                                horizontal: HorizontalAlign::Center,
-                                vertical: VerticalAlign::Center,
+                                horizontal: HorizontalAlign::Left,
+                                vertical: VerticalAlign::Top,
                             },
                         ),
                         ..Default::default()

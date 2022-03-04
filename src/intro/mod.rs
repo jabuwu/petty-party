@@ -21,9 +21,29 @@ impl Plugin for IntroPlugin {
     }
 }
 
-pub fn enter(mut intro: ResMut<IntroState>, audio: Res<Audio>, asset_library: Res<AssetLibrary>) {
+pub fn enter(
+    mut intro: ResMut<IntroState>,
+    audio: Res<Audio>,
+    asset_library: Res<AssetLibrary>,
+    difficulty: Res<Difficulty>,
+    mut game: ResMut<Game>,
+) {
     //audio.play_looped(asset_library.audio("music"));
     *intro = IntroState::Dialogue1;
+    match difficulty.as_ref() {
+        Difficulty::Normal => {
+            game.my_coins = 25;
+            game.your_coins = 25;
+        }
+        Difficulty::Hard => {
+            game.my_coins = 15;
+            game.your_coins = 15;
+        }
+    }
+    if matches!(*difficulty, Difficulty::Hard) {
+        game.practice_first_message = false;
+        game.rps_early_message = false;
+    }
 }
 
 pub fn update(
@@ -40,7 +60,7 @@ pub fn update(
     match *intro {
         IntroState::Dialogue1 => {
             dialogue.add(DialogueEntry {
-                text: "Hi! Welcome!".into(),
+                text: "Hi! Welcome! Press space to proceed!".into(),
                 ..Default::default()
             });
             dialogue.add(DialogueEntry {

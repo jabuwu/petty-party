@@ -31,21 +31,22 @@ pub fn enter(
         1.
     } else {
         match *difficulty {
-            Difficulty::Easy => 0.75,
             Difficulty::Normal => 0.75,
             Difficulty::Hard => 0.5,
-            Difficulty::VeryHard => 0.5,
         }
     };
     let your_size = if mini_game.practice {
         1.
     } else {
         match *difficulty {
-            Difficulty::Easy => 1.2,
             Difficulty::Normal => 1.2,
             Difficulty::Hard => 1.2,
-            Difficulty::VeryHard => 1.2,
         }
+    };
+    let player_hitbox_size = 0.8;
+    let my_hitbox_size = match *difficulty {
+        Difficulty::Normal => 1.2,
+        Difficulty::Hard => 0.8,
     };
     commands
         .spawn_bundle(SpriteBundle {
@@ -64,7 +65,10 @@ pub fn enter(
         })
         .insert(Collision {
             shape: CollisionShape::Rect {
-                size: Vec2::new(50. * your_size * 0.8, 70. * your_size * 0.8),
+                size: Vec2::new(
+                    50. * your_size * player_hitbox_size,
+                    70. * your_size * player_hitbox_size,
+                ),
             },
             flags: 0x1000,
         })
@@ -85,7 +89,10 @@ pub fn enter(
         })
         .insert(Collision {
             shape: CollisionShape::Rect {
-                size: Vec2::new(59. * my_size * 0.8, 70. * my_size * 0.8),
+                size: Vec2::new(
+                    59. * my_size * my_hitbox_size,
+                    70. * my_size * my_hitbox_size,
+                ),
             },
             flags: 0x1000,
         })
@@ -109,10 +116,8 @@ pub fn spawn_cannons(
         return;
     }
     let spawn_chance = match *difficulty {
-        Difficulty::Easy => 0.05,
         Difficulty::Normal => 0.05,
         Difficulty::Hard => 0.08,
-        Difficulty::VeryHard => 0.1,
     };
     let mut rng = rand::thread_rng();
     if rng.gen_bool(spawn_chance) {

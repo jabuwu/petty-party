@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use bevy::prelude::*;
+use bevy_kira_audio::Audio;
 
 pub enum EndGameState {
     Win,
@@ -95,6 +96,8 @@ pub fn update(
     mut board: ResMut<Board>,
     mut game_state: ResMut<State<GameState>>,
     time: Res<Time>,
+    audio: Res<Audio>,
+    asset_library: Res<AssetLibrary>,
 ) {
     if !dialogue.busy() {
         match end_game.state {
@@ -102,6 +105,9 @@ pub fn update(
                 reset.send(GameResetSend);
             }
             EndGameState::Win => {
+                if board.my_item_use_interpolate == 0. {
+                    audio.play(asset_library.audio("itemuse"));
+                }
                 board.my_item_use_interpolate += time.delta_seconds() * 0.75;
                 board.my_item_use_interpolate = board.my_item_use_interpolate.clamp(0., 1.);
                 if board.my_item_use_interpolate >= 1. {

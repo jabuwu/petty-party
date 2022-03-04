@@ -21,6 +21,12 @@ pub fn enter(mut dialogue: ResMut<Dialogue>) {
         color: Color::WHITE,
         ..Default::default()
     });
+    dialogue.add(DialogueEntry {
+        text: "I had to nerf the difficulty of the game a lot. I found it was too\ndifficult for a game jam submission. If you want to try the\noriginal difficulty, press 1 at the color select screen."
+            .into(),
+        color: Color::WHITE,
+        ..Default::default()
+    });
 }
 
 pub fn update(game: Res<Game>, dialogue: Res<Dialogue>, mut reset: EventWriter<GameResetSend>) {

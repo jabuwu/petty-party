@@ -52,7 +52,7 @@ pub fn update(
         return;
     }
     for (entity, mut transform, collision, mut boat, mut sprite) in boat_query.iter_mut() {
-        let movement = boat.movement.normalize_or_zero() * 1.5;
+        let movement = boat.movement;
         let collision_filter = Some(CollisionFilter {
             exclude_entity: entity,
             flags: 0x1000,

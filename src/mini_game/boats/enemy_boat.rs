@@ -22,6 +22,6 @@ pub fn update(mut boat_query: Query<(&mut Boat, &mut EnemyBoat)>) {
         if enemy_boat.angle == 0. || rng.gen_bool(0.1) {
             enemy_boat.angle = rng.gen_range(0.0..360.0f32).to_radians();
         }
-        boat.movement = Vec2::new(enemy_boat.angle.cos() * 2., enemy_boat.angle.sin() * 2.);
+        boat.movement = Vec2::new(enemy_boat.angle.cos() * 2., enemy_boat.angle.sin() * 1.5);
     }
 }

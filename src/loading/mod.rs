@@ -39,7 +39,7 @@ pub fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
                 text: Text::with_section(
                     "loading",
                     TextStyle {
-                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                        font: asset_server.load("fonts/Pixellari.ttf"),
                         font_size: 42.0,
                         color: Color::WHITE,
                     },

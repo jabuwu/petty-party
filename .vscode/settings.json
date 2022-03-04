@@ -11,6 +11,7 @@
     "despawning",
     "minigame",
     "minigames",
-    "cooldown"
+    "cooldown",
+    "hitbox",
   ]
 }

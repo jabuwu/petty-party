@@ -37,16 +37,10 @@ pub fn init(
         }
     } else {
         match difficulty.as_ref() {
-            Difficulty::Easy => {
-                board.moves = rng.gen_range(1..=3) * 3;
-            }
             Difficulty::Normal => {
                 board.moves = rng.gen_range(1..=2) * 3;
             }
             Difficulty::Hard => {
-                board.moves = 3;
-            }
-            Difficulty::VeryHard => {
                 board.moves = 3;
             }
         }

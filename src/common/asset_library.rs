@@ -2,8 +2,6 @@ use bevy::prelude::*;
 use bevy_kira_audio::AudioSource;
 use std::collections::HashMap;
 
-// TODO: remove uses of asset server
-
 pub struct LoadTime(f32);
 
 pub struct AssetLibraryReady;
@@ -13,6 +11,7 @@ pub struct AssetLibrary {
     images: HashMap<String, Handle<Image>>,
     texture_atlases: HashMap<String, Handle<TextureAtlas>>,
     audio: HashMap<String, Handle<AudioSource>>,
+    fonts: HashMap<String, Handle<Font>>,
 }
 
 impl AssetLibrary {
@@ -28,7 +27,9 @@ impl AssetLibrary {
         self.audio.get(name).unwrap().clone()
     }
 
-    pub fn load_audio(&mut self, asset_server: &Res<AssetServer>) {}
+    pub fn font(&self, name: &str) -> Handle<Font> {
+        self.fonts.get(name).unwrap().clone()
+    }
 }
 
 pub struct AssetLibraryPlugin;
@@ -53,7 +54,11 @@ pub fn init_assets(
         ("tile_red", "sprites/tile_red.png"),
         ("tile_green", "sprites/tile_green.png"),
         ("bg", "sprites/bg.png"),
-        ("score_overlay", "sprites/score_overlay.png"),
+        ("score_overlay_1", "sprites/score_overlay_1.png"),
+        ("score_overlay_2", "sprites/score_overlay_2.png"),
+        ("score_overlay_3", "sprites/score_overlay_3.png"),
+        ("item_rapier", "sprites/item_rapier.png"),
+        ("item_mystery", "sprites/item_mystery.png"),
         ("boats_bg", "sprites/boats_bg.png"),
         ("boat", "sprites/boat.png"),
         ("cannon", "sprites/cannon.png"),
@@ -66,6 +71,8 @@ pub fn init_assets(
         ("me_2", "sprites/me_2.png"),
         ("heart", "sprites/heart.png"),
         ("heart_empty", "sprites/heart_empty.png"),
+        ("info_bg", "sprites/info_bg.png"),
+        ("pawn", "sprites/pawn.png"),
     ];
     let texture_atlases: Vec<(&str, &str, Vec2, usize, usize)> = vec![
         (
@@ -98,7 +105,10 @@ pub fn init_assets(
         ("duelhit", "sfx/duelhit.ogg"),
         ("duelblock", "sfx/duelblock.ogg"),
         ("static", "sfx/static.ogg"),
+        ("itembuy", "sfx/itembuy.ogg"),
+        ("itemuse", "sfx/itemuse.ogg"),
     ];
+    let fonts: Vec<(&str, &str)> = vec![("game", "fonts/Pixellari.ttf")];
 
     for image_def in images.iter() {
         asset_library
@@ -123,6 +133,11 @@ pub fn init_assets(
         asset_library
             .audio
             .insert(audio_def.0.into(), asset_server.load(audio_def.1));
+    }
+    for font_def in fonts.iter() {
+        asset_library
+            .fonts
+            .insert(font_def.0.into(), asset_server.load(font_def.1));
     }
 }
 

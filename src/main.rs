@@ -3,6 +3,7 @@ use bevy_kira_audio::AudioPlugin;
 use board::BoardPlugin;
 use common::asset_library::AssetLibraryReady;
 use common::CommonPlugin;
+use cont::ContinuePlugin;
 use end_game::EndGamePlugin;
 use ending::EndingPlugin;
 use info_screen::InfoScreenPlugin;
@@ -12,10 +13,8 @@ use mini_game::MiniGamePlugin;
 use setup::SetupPlugin;
 
 pub enum Difficulty {
-    Easy,
     Normal,
     Hard,
-    VeryHard,
 }
 
 #[derive(Default)]
@@ -28,6 +27,8 @@ pub struct Game {
     pub reset_timer: f32,
     pub duel: bool,
     pub dice_roll: bool,
+    pub practice_first_message: bool,
+    pub rps_early_message: bool,
 }
 
 pub struct GameReset;
@@ -44,6 +45,7 @@ pub enum GameState {
     MiniGame,
     EndGame,
     Ending,
+    Continue,
 }
 
 #[derive(Component)]
@@ -79,6 +81,7 @@ fn main() {
         .add_plugin(IntroPlugin)
         .add_plugin(SetupPlugin)
         .add_plugin(EndingPlugin)
+        .add_plugin(ContinuePlugin)
         .add_startup_system(init)
         .add_system(camera_scale.label(GameLabel::CameraScale))
         .add_system(start_game)
@@ -104,32 +107,15 @@ pub fn start_game(
     mut game: ResMut<Game>,
     mut asset_library_ready: EventReader<AssetLibraryReady>,
     mut game_state: ResMut<State<GameState>>,
-    difficulty: Res<Difficulty>,
 ) {
     for _ in asset_library_ready.iter() {
-        match difficulty.as_ref() {
-            Difficulty::Easy => {
-                game.my_coins = 15;
-                game.your_coins = 20;
-            }
-            Difficulty::Normal => {
-                game.my_coins = 15;
-                game.your_coins = 15;
-            }
-            Difficulty::Hard => {
-                game.my_coins = 15;
-                game.your_coins = 10;
-            }
-            Difficulty::VeryHard => {
-                game.my_coins = 15;
-                game.your_coins = 4;
-            }
-        }
         game.my_color = Color::rgba(1., 0.7, 0.7, 1.0);
         game.your_color = Color::YELLOW;
         game.turn = 1;
         game.duel = false;
         game.dice_roll = false;
+        game.practice_first_message = true;
+        game.rps_early_message = true;
         game_state.set(GameState::Setup).unwrap();
     }
 }
@@ -184,6 +170,7 @@ pub fn reset_game_hotkey(
 
 pub mod board;
 pub mod common;
+pub mod cont;
 pub mod end_game;
 pub mod ending;
 pub mod info_screen;

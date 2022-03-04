@@ -1,8 +1,6 @@
 use crate::prelude::*;
 use bevy::prelude::*;
 
-// TODO "Turn X"
-
 #[derive(Default)]
 pub struct Starting {
     time: f32,

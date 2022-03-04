@@ -3,7 +3,6 @@ use bevy::prelude::*;
 use boats::EgBoatsPlugin;
 use duel::EgDuelPlugin;
 use noise::NoisePlugin;
-use rand::prelude::*;
 use rps::EgRpsPlugin;
 
 #[derive(Component)]
@@ -79,6 +78,7 @@ pub fn enter(
                     color: game.your_color,
                     ..Default::default()
                 },
+                visibility: Visibility { is_visible: false },
                 ..Default::default()
             })
             .insert(EndGameHeart {
@@ -93,6 +93,7 @@ pub fn enter(
                     color: game.my_color,
                     ..Default::default()
                 },
+                visibility: Visibility { is_visible: false },
                 ..Default::default()
             })
             .insert(EndGameHeart {
@@ -116,12 +117,12 @@ pub fn update(
     mut end_game_state: ResMut<State<EndGameState>>,
     mut end_game: ResMut<EndGame>,
     time: Res<Time>,
-    mut query: Query<(&mut Handle<Image>, &EndGameHeart)>,
+    mut query: Query<(&mut Handle<Image>, &mut Visibility, &EndGameHeart)>,
     asset_library: Res<AssetLibrary>,
     mut reset: EventWriter<GameResetSend>,
     mut game_state: ResMut<State<GameState>>,
+    difficulty: Res<Difficulty>,
 ) {
-    let mut rng = rand::thread_rng();
     end_game.state_time += time.delta_seconds();
     if matches!(end_game_state.current(), EndGameState::Noise) {
         if end_game.my_health == 0 {
@@ -131,7 +132,11 @@ pub fn update(
             }
         } else if end_game.your_health == 0 {
             if end_game.state_time > 2.0 {
-                reset.send(GameResetSend);
+                if matches!(*difficulty, Difficulty::Hard) {
+                    reset.send(GameResetSend);
+                } else {
+                    game_state.set(GameState::Continue).unwrap();
+                }
                 end_game.state_time = 0.;
             }
         } else {
@@ -152,7 +157,7 @@ pub fn update(
         end_game_state.set(EndGameState::Noise).unwrap();
         end_game.switch = false;
     }
-    for (mut image, heart) in query.iter_mut() {
+    for (mut image, mut visibility, heart) in query.iter_mut() {
         if heart.mine {
             if heart.amount > end_game.my_health {
                 *image = asset_library.image("heart_empty");
@@ -166,6 +171,7 @@ pub fn update(
                 *image = asset_library.image("heart");
             }
         }
+        visibility.is_visible = !matches!(end_game_state.current(), EndGameState::Noise);
     }
 }
 

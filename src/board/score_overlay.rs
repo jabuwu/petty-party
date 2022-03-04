@@ -31,9 +31,8 @@ impl Plugin for ScoreOverlayPlugin {
 }
 
 pub fn init(
-    game: Res<Game>,
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    asset_library: Res<AssetLibrary>,
     mut asset_library_ready: EventReader<AssetLibraryReady>,
 ) {
     for _ in asset_library_ready.iter() {
@@ -61,8 +60,8 @@ pub fn init(
                             size: Size::new(Val::Px(640.0), Val::Px(480.0)),
                             ..Default::default()
                         },
-                        image: asset_server.load("sprites/score_overlay_1.png").into(),
-                        color: UiColor(game.your_color),
+                        image: asset_library.image("score_overlay_1").into(),
+                        color: UiColor(Color::NONE),
                         ..Default::default()
                     })
                     .insert(ScoreOverlayBg { mine: false });
@@ -78,8 +77,8 @@ pub fn init(
                             size: Size::new(Val::Px(640.0), Val::Px(480.0)),
                             ..Default::default()
                         },
-                        color: UiColor(game.my_color),
-                        image: asset_server.load("sprites/score_overlay_2.png").into(),
+                        color: UiColor(Color::NONE),
+                        image: asset_library.image("score_overlay_2").into(),
                         ..Default::default()
                     })
                     .insert(ScoreOverlayBg { mine: true });
@@ -96,7 +95,7 @@ pub fn init(
                             ..Default::default()
                         },
                         visibility: Visibility { is_visible: false },
-                        image: asset_server.load("sprites/score_overlay_3.png").into(),
+                        image: asset_library.image("score_overlay_3").into(),
                         ..Default::default()
                     })
                     .insert(ScoreOverlay)
@@ -108,7 +107,7 @@ pub fn init(
                                     position_type: PositionType::Absolute,
                                     position: Rect {
                                         left: Val::Px(150.0),
-                                        top: Val::Px(35.0),
+                                        top: Val::Px(39.0),
                                         ..Default::default()
                                     },
                                     ..Default::default()
@@ -117,7 +116,7 @@ pub fn init(
                                 text: Text::with_section(
                                     "",
                                     TextStyle {
-                                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                                        font: asset_library.font("game"),
                                         font_size: 48.0,
                                         color: Color::WHITE,
                                     },
@@ -136,7 +135,7 @@ pub fn init(
                                     position_type: PositionType::Absolute,
                                     position: Rect {
                                         right: Val::Px(150.0),
-                                        top: Val::Px(35.0),
+                                        top: Val::Px(39.0),
                                         ..Default::default()
                                     },
                                     ..Default::default()
@@ -145,7 +144,7 @@ pub fn init(
                                 text: Text::with_section(
                                     "",
                                     TextStyle {
-                                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                                        font: asset_library.font("game"),
                                         font_size: 48.0,
                                         color: Color::WHITE,
                                     },
@@ -171,7 +170,7 @@ pub fn init(
                             ..Default::default()
                         },
                         visibility: Visibility { is_visible: false },
-                        image: asset_server.load("sprites/item_rapier.png").into(),
+                        image: asset_library.image("item_rapier").into(),
                         ..Default::default()
                     })
                     .insert(ScoreOverlayItem { mine: false });
@@ -188,7 +187,7 @@ pub fn init(
                             ..Default::default()
                         },
                         visibility: Visibility { is_visible: false },
-                        image: asset_server.load("sprites/item_mystery.png").into(),
+                        image: asset_library.image("item_mystery").into(),
                         ..Default::default()
                     })
                     .insert(ScoreOverlayItem { mine: true });

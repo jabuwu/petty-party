@@ -135,11 +135,7 @@ pub fn init(
         }
         let my_pawn = commands
             .spawn_bundle(SpriteBundle {
-                sprite: Sprite {
-                    custom_size: Vec2::new(10.0, 10.0).into(),
-                    color: Color::RED,
-                    ..Default::default()
-                },
+                texture: asset_library.image("pawn"),
                 visibility: Visibility { is_visible: false },
                 transform: Transform::from_xyz(tiles[0].position.x, tiles[0].position.y, 0.41),
                 ..Default::default()
@@ -154,11 +150,7 @@ pub fn init(
             .id();
         let your_pawn = commands
             .spawn_bundle(SpriteBundle {
-                sprite: Sprite {
-                    custom_size: Vec2::new(10.0, 10.0).into(),
-                    color: Color::RED,
-                    ..Default::default()
-                },
+                texture: asset_library.image("pawn"),
                 visibility: Visibility { is_visible: false },
                 transform: Transform::from_xyz(tiles[0].position.x, tiles[0].position.y, 0.4),
                 ..Default::default()

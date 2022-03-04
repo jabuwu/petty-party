@@ -24,11 +24,10 @@ impl Plugin for TurnIntroPlugin {
 pub fn init(
     mut turn_intro: ResMut<TurnIntro>,
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    asset_library: Res<AssetLibrary>,
     mut board: ResMut<Board>,
     mut camera_controller: ResMut<CameraController>,
     audio: Res<Audio>,
-    asset_library: Res<AssetLibrary>,
 ) {
     audio.play(asset_library.audio("turnstart"));
     if board.my_turn {
@@ -70,7 +69,7 @@ pub fn init(
                         "Your Turn"
                     },
                     TextStyle {
-                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                        font: asset_library.font("game"),
                         font_size: 42.0,
                         color: Color::BLACK,
                     },

@@ -14,7 +14,7 @@ impl Plugin for TurnInputPlugin {
     }
 }
 
-pub fn init(mut commands: Commands, asset_server: Res<AssetServer>, board: Res<Board>) {
+pub fn init(mut commands: Commands, asset_library: Res<AssetLibrary>, board: Res<Board>) {
     if !board.my_turn {
         let item_text = match board.your_item {
             Item::None => "",
@@ -47,7 +47,7 @@ pub fn init(mut commands: Commands, asset_server: Res<AssetServer>, board: Res<B
                     text: Text::with_section(
                         format!("SPACE - Roll Dice\nF - Free Cam{}", item_text),
                         TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font: asset_library.font("game"),
                             font_size: 24.0,
                             color: Color::BLACK,
                         },

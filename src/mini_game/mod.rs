@@ -75,7 +75,7 @@ pub fn enter(
     mut commands: Commands,
     mut camera_controller: ResMut<CameraController>,
     mut mini_game: ResMut<MiniGame>,
-    asset_server: Res<AssetServer>,
+    asset_library: Res<AssetLibrary>,
     mut dialogue: ResMut<Dialogue>,
 ) {
     commands
@@ -99,7 +99,7 @@ pub fn enter(
                     text: Text::with_section(
                         "",
                         TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font: asset_library.font("game"),
                             font_size: 42.0,
                             color: Color::WHITE,
                         },
@@ -130,7 +130,7 @@ pub fn enter(
                     text: Text::with_section(
                         "Press ENTER to quit practice",
                         TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font: asset_library.font("game"),
                             font_size: 24.0,
                             color: Color::WHITE,
                         },
@@ -156,7 +156,7 @@ pub fn enter(
                     text: Text::with_section(
                         "Coins: 0",
                         TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font: asset_library.font("game"),
                             font_size: 48.0,
                             color: Color::WHITE,
                         },
@@ -182,7 +182,7 @@ pub fn enter(
                     text: Text::with_section(
                         "Coins: 0",
                         TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font: asset_library.font("game"),
                             font_size: 48.0,
                             color: Color::WHITE,
                         },

@@ -3,6 +3,9 @@ use bevy::prelude::*;
 use bevy_kira_audio::Audio;
 use rand::Rng;
 
+const EARLY_MESSAGE: &str =
+    "HEADS UP: You're selecting too early!\nYou have time to choose AFTER me.";
+
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum RpsSelect {
     Rock,
@@ -73,6 +76,7 @@ pub enum RpsState {
         my_selection: RpsSelect,
         your_selection: RpsSelect,
         selection_window: f32,
+        reshot: bool,
     },
 }
 
@@ -103,12 +107,7 @@ impl Plugin for RpsPlugin {
     }
 }
 
-pub fn rps_init(
-    game: Res<Game>,
-    mut commands: Commands,
-    asset_library: Res<AssetLibrary>,
-    asset_server: Res<AssetServer>,
-) {
+pub fn rps_init(game: Res<Game>, mut commands: Commands, asset_library: Res<AssetLibrary>) {
     commands
         .spawn()
         .insert(RpsController {
@@ -153,7 +152,7 @@ pub fn rps_init(
             text: Text::with_section(
                 "",
                 TextStyle {
-                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                    font: asset_library.font("game"),
                     font_size: 40.0,
                     color: Color::WHITE,
                 },
@@ -180,18 +179,24 @@ pub fn rps_update(
     difficulty: Res<Difficulty>,
     audio: Res<Audio>,
     asset_library: Res<AssetLibrary>,
+    dialogue: Res<Dialogue>,
 ) {
+    if dialogue.busy() {
+        return;
+    }
     let reshoot_chance = if mini_game.practice {
         0.
     } else if game.turn == 2 {
-        0.6
+        1.
     } else {
         match *difficulty {
-            Difficulty::Easy => 0.3,
             Difficulty::Normal => 0.4,
             Difficulty::Hard => 0.6,
-            Difficulty::VeryHard => 0.6,
         }
+    };
+    let selection_window_time = match *difficulty {
+        Difficulty::Normal => 1.5,
+        Difficulty::Hard => 1.0,
     };
     if !mini_game.active {
         return;
@@ -283,7 +288,8 @@ pub fn rps_update(
                         time: 0.0,
                         my_selection: RpsSelect::new_rand(),
                         your_selection: RpsSelect::Rock,
-                        selection_window: 1.0,
+                        selection_window: selection_window_time,
+                        reshot: false,
                     };
                 }
             }
@@ -292,13 +298,15 @@ pub fn rps_update(
                 my_selection,
                 your_selection,
                 selection_window,
+                reshot,
                 ..
             } => {
                 *time += timer.delta_seconds();
                 *selection_window -= timer.delta_seconds();
                 if *time > 2. {
                     let losing = my_selection.compare(*your_selection) == RpsCompare::Lose;
-                    if losing && rng.gen_bool(reshoot_chance) {
+                    if losing && rng.gen_bool(reshoot_chance) && !*reshot {
+                        *reshot = true;
                         audio.play(asset_library.audio("shoot"));
                         *time = 0.0;
                         let old_selection = *my_selection;
@@ -309,7 +317,7 @@ pub fn rps_update(
                                 *my_selection = RpsSelect::new_winner(*your_selection);
                             }
                         }
-                        *selection_window = 1.0;
+                        *selection_window = selection_window_time;
                     } else {
                         match my_selection.compare(*your_selection) {
                             RpsCompare::Win => {
@@ -382,7 +390,21 @@ pub fn rps_update_coins(mut query: Query<&mut RpsController>, mut mini_game: Res
     }
 }
 
-pub fn rps_input(input: Res<Input<KeyCode>>, mut query: Query<&mut RpsController>) {
+pub fn rps_input(
+    mut game: ResMut<Game>,
+    input: Res<Input<KeyCode>>,
+    mut query: Query<&mut RpsController>,
+    mut dialogue: ResMut<Dialogue>,
+    difficulty: Res<Difficulty>,
+) {
+    // this function has been visited by the game jam fairy
+    if dialogue.busy() {
+        return;
+    }
+    let early_time = match *difficulty {
+        Difficulty::Normal => 1.25,
+        Difficulty::Hard => 0.75,
+    };
     for mut controller in query.iter_mut() {
         let RpsController { state, .. } = controller.as_mut();
         if let RpsState::Play {
@@ -391,7 +413,45 @@ pub fn rps_input(input: Res<Input<KeyCode>>, mut query: Query<&mut RpsController
             ..
         } = state
         {
-            if *selection_window > 0. {
+            if *selection_window > early_time && game.rps_early_message {
+                if input.just_pressed(KeyCode::R) {
+                    dialogue.add(DialogueEntry {
+                        text: EARLY_MESSAGE.into(),
+                        ..Default::default()
+                    });
+                    *state = RpsState::Countdown {
+                        time: 0.0,
+                        stage: 0,
+                        y: 0.0,
+                        can_advance: true,
+                    };
+                    game.rps_early_message = false;
+                } else if input.just_pressed(KeyCode::P) {
+                    dialogue.add(DialogueEntry {
+                        text: EARLY_MESSAGE.into(),
+                        ..Default::default()
+                    });
+                    *state = RpsState::Countdown {
+                        time: 0.0,
+                        stage: 0,
+                        y: 0.0,
+                        can_advance: true,
+                    };
+                    game.rps_early_message = false;
+                } else if input.just_pressed(KeyCode::S) {
+                    dialogue.add(DialogueEntry {
+                        text: EARLY_MESSAGE.into(),
+                        ..Default::default()
+                    });
+                    *state = RpsState::Countdown {
+                        time: 0.0,
+                        stage: 0,
+                        y: 0.0,
+                        can_advance: true,
+                    };
+                    game.rps_early_message = false;
+                }
+            } else if *selection_window > 0. {
                 if input.just_pressed(KeyCode::R) {
                     *your_selection = RpsSelect::Rock;
                     *selection_window = 0.;
@@ -401,6 +461,47 @@ pub fn rps_input(input: Res<Input<KeyCode>>, mut query: Query<&mut RpsController
                 } else if input.just_pressed(KeyCode::S) {
                     *your_selection = RpsSelect::Scissors;
                     *selection_window = 0.;
+                }
+            }
+        }
+        if game.rps_early_message {
+            if let RpsState::Countdown { .. } = state {
+                if input.just_pressed(KeyCode::R) {
+                    dialogue.add(DialogueEntry {
+                        text: EARLY_MESSAGE.into(),
+                        ..Default::default()
+                    });
+                    *state = RpsState::Countdown {
+                        time: 0.0,
+                        stage: 0,
+                        y: 0.0,
+                        can_advance: true,
+                    };
+                    game.rps_early_message = false;
+                } else if input.just_pressed(KeyCode::P) {
+                    dialogue.add(DialogueEntry {
+                        text: EARLY_MESSAGE.into(),
+                        ..Default::default()
+                    });
+                    *state = RpsState::Countdown {
+                        time: 0.0,
+                        stage: 0,
+                        y: 0.0,
+                        can_advance: true,
+                    };
+                    game.rps_early_message = false;
+                } else if input.just_pressed(KeyCode::S) {
+                    dialogue.add(DialogueEntry {
+                        text: EARLY_MESSAGE.into(),
+                        ..Default::default()
+                    });
+                    *state = RpsState::Countdown {
+                        time: 0.0,
+                        stage: 0,
+                        y: 0.0,
+                        can_advance: true,
+                    };
+                    game.rps_early_message = false;
                 }
             }
         }

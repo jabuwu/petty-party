@@ -13,7 +13,15 @@ impl Plugin for PlayerBoatPlugin {
     }
 }
 
-pub fn update(mut boat_query: Query<&mut Boat, With<PlayerBoat>>, input: Res<Input<KeyCode>>) {
+pub fn update(
+    mut boat_query: Query<&mut Boat, With<PlayerBoat>>,
+    input: Res<Input<KeyCode>>,
+    difficulty: Res<Difficulty>,
+) {
+    let speed = match *difficulty {
+        Difficulty::Normal => 2.0,
+        Difficulty::Hard => 1.5,
+    };
     for mut boat in boat_query.iter_mut() {
         boat.movement = Vec2::new(0., 0.);
         if input.pressed(KeyCode::S) {
@@ -28,6 +36,6 @@ pub fn update(mut boat_query: Query<&mut Boat, With<PlayerBoat>>, input: Res<Inp
         if input.pressed(KeyCode::D) {
             boat.movement.x += 1.;
         }
-        boat.movement = boat.movement.normalize_or_zero() * 1.5;
+        boat.movement = boat.movement.normalize_or_zero() * speed;
     }
 }

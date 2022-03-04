@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use bevy::prelude::*;
+use bevy_kira_audio::Audio;
 
 pub struct UseItem {
     time: f32,
@@ -25,6 +26,8 @@ pub fn init(
     mut use_item: ResMut<UseItem>,
     board: Res<Board>,
     mut dialogue: ResMut<Dialogue>,
+    audio: Res<Audio>,
+    asset_library: Res<AssetLibrary>,
 ) {
     use_item.time = 0.;
     use_item.item = board.your_item;
@@ -34,6 +37,7 @@ pub fn init(
             ..Default::default()
         });
     } else if matches!(use_item.item, Item::Rapier) {
+        audio.play(asset_library.audio("itemuse"));
         game.duel = true;
         dialogue.add(DialogueEntry {
             text: "You used the rapier!".into(),
