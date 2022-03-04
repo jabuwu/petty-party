@@ -22,7 +22,6 @@ impl Plugin for MovingPlugin {
 pub fn init(
     game: Res<Game>,
     mut board: ResMut<Board>,
-    difficulty: Res<Difficulty>,
     mut moving: ResMut<Moving>,
     mut dice_start: EventWriter<DiceRollStart>,
 ) {
@@ -36,14 +35,7 @@ pub fn init(
             board.moves = if game.turn % 2 == 1 { 4 } else { 5 };
         }
     } else {
-        match difficulty.as_ref() {
-            Difficulty::Normal => {
-                board.moves = rng.gen_range(1..=2) * 3;
-            }
-            Difficulty::Hard => {
-                board.moves = 3;
-            }
-        }
+        board.moves = rng.gen_range(1..=2) * 3;
     }
     dice_start.send(DiceRollStart { value: board.moves });
 }
